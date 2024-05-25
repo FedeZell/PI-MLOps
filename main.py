@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import pandas as pd
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 
 # -------------------------------------------------------------------------------------------------------------------
 
@@ -7,19 +9,11 @@ app = FastAPI()
 
 # -------------------------------------------------------------------------------------------------------------------
 
-df_items = pd.read_parquet('C:\\Users\\fedez\\OneDrive\\Escritorio\\PI-MLOps\\Data\\items.parquet')
-df_juegos = pd.read_parquet('C:\\Users\\fedez\\OneDrive\\Escritorio\\PI-MLOps\\Data\\juegos.parquet')
-df_resenias = pd.read_parquet('C:\\Users\\fedez\\OneDrive\\Escritorio\\PI-MLOps\\Data\\resenias.parquet')
-
-# -------------------------------------------------------------------------------------------------------------------
-
 # Endpoint 4
-@app.get('/developer_reviews_analysis')
-async def best_developer_year(anio):
+@app.get('/best_developer_year')
+async def best_developer_year(anio:int):
 
-    df_resenias4 = df_resenias[['item_id', 'recommend']]
-    df_juegos4 = df_juegos[['item_id', 'developer', 'release_year']]
-    df_fun_4 = df_juegos4.merge(df_resenias4, on='item_id', how='outer') 
+    df_fun_4 = pd.read_parquet('C:\Users\fedez\OneDrive\Escritorio\PI-MLOps\Data\Procesada\df_fun_4_5.parquet')
 
     if anio not in df_fun_4['release_year'].unique():
         return f"El año {anio} no existe en los registros."
@@ -33,7 +27,11 @@ async def best_developer_year(anio):
     plata = desarrolladoras.iloc[1]['developer']
     bronce = desarrolladoras.iloc[2]['developer']
 
-    top3 = {"Puesto 1": oro.title(), "Puesto 2": plata.title(), "Puesto 3": bronce.title()}
+    top3 = {
+            "Puesto 1": oro.title(),
+            "Puesto 2": plata.title(),
+            "Puesto 3": bronce.title()
+            }
 
     return top3
 
@@ -41,11 +39,10 @@ async def best_developer_year(anio):
 
 # Endpoint 5
 
-def developer_reviews_analysis(desarrolladora):
+@app.get('/developer_reviews_analysis')
+async def developer_reviews_analysis(desarrolladora):
 
-    df_juegos5 = df_juegos[['item_id', 'developer']]
-    df_resenias5 = df_resenias[['item_id', 'analisis_sentimiento']]
-    df_fun_5 = df_resenias5.merge(df_juegos5, on='item_id', how='outer')
+    df_fun_5 = pd.read_parquet('C:\Users\fedez\OneDrive\Escritorio\PI-MLOps\Data\Procesada\df_fun_4_5.parquet')
 
     if type(desarrolladora) != str:
         return 'Error: El valor ingresado debe ser una palabra'
