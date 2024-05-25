@@ -17,31 +17,44 @@ df_resenias = pd.read_parquet('C:\\Users\\fedez\\OneDrive\\Escritorio\\PI-MLOps\
 @app.get('/developer_reviews_analysis')
 async def best_developer_year(anio):
 
-    # Se extraen las columnas de df_resenias necesarias para el merge con df_juegos.
     df_resenias4 = df_resenias[['item_id', 'recommend']]
-    df_fun_4 = df_juegos.merge(df_resenias4, on='item_id', how='outer')
+    df_juegos4 = df_juegos[['item_id', 'developer', 'release_year']]
+    df_fun_4 = df_juegos4.merge(df_resenias4, on='item_id', how='outer') 
 
-    # Se corrobora que el input sea correcto.
     if anio not in df_fun_4['release_year'].unique():
         return f"El año {anio} no existe en los registros."
-    
-    # Filtrar el dataset para obtener solo las filas correspondientes al año dado.
     juegos_del_año = df_fun_4[df_fun_4['release_year'] == anio]
-
-    # Se calculan las reseñas por desarrolladora.
+    
     resenias = juegos_del_año.groupby('developer')['recommend'].sum().reset_index()
 
-    # Se ordenan los juegos mejor valorados en orden ascendente.
     desarrolladoras = resenias.sort_values(by='recommend', ascending=False)
 
-    # Se ordenan los primeros tres puestos
     oro = desarrolladoras.iloc[0]['developer']
     plata = desarrolladoras.iloc[1]['developer']
     bronce = desarrolladoras.iloc[2]['developer']
 
-    # Crear el diccionario con los tres primeros lugares
-    top3 = {"Puesto 1": oro, "Puesto 2": plata,"Puesto 3": bronce}
+    top3 = {"Puesto 1": oro.title(), "Puesto 2": plata.title(), "Puesto 3": bronce.title()}
+
     return top3
 
 # -------------------------------------------------------------------------------------------------------------------
 
+# Endpoint 5
+
+def developer_reviews_analysis(desarrolladora):
+
+    df_juegos5 = df_juegos[['item_id', 'developer']]
+    df_resenias5 = df_resenias[['item_id', 'analisis_sentimiento']]
+    df_fun_5 = df_resenias5.merge(df_juegos5, on='item_id', how='outer')
+
+    if type(desarrolladora) != str:
+        return 'Error: El valor ingresado debe ser una palabra'
+    
+    desarrollador = desarrolladora.lower()
+
+    desarrollador = df_fun_5[df_fun_5['developer'] == desarrollador]
+    
+    analisis = desarrollador['analisis_sentimiento']
+    opinion = analisis.value_counts()
+
+    return {desarrolladora : list([f'Negative: {(opinion.get(0, 0))}', f'Positive: {(opinion.get(2, 0))}'])}
