@@ -20,6 +20,8 @@ df_fun_4_5 = pd.read_parquet('Datasets/Procesado/df_fun_4_5.parquet')
 @app.get('/userdata')
 async def userdata(user_id:str):
 
+    ''' Por cuestion de uso de memoria en Render se procede a tomar una muestra del dataframe para
+    evitar complicaciones a la hora de hacer el deploy ya que el archivo original es muy pesado.'''
     df_sample_fun_2 = df_fun_2.sample(frac=0.1, random_state=50)
 
     if type(user_id) != str:
@@ -55,8 +57,8 @@ async def userdata(user_id:str):
 @app.get('/user_for_genre')
 async def User_For_Genre(genero:str):
 
-    ''' Por cuestion de uso de memoria en Render se procede a tomar una muestra
-    del dataframe para evitar complicaciones a la hora de hacer el deploy.'''
+    ''' Por cuestion de uso de memoria en Render se procede a tomar una muestra del dataframe para
+    evitar complicaciones a la hora de hacer el deploy ya que el archivo original es muy pesado.'''
     df_sample_fun_3 = df_fun_3.sample(frac=0.1, random_state=50)
 
     genero_m = genero.lower()
