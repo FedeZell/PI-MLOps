@@ -7,7 +7,10 @@ app = FastAPI()
 
 
 df_fun_2 = pd.read_parquet('Data/Procesada/df_fun_2.parquet')
+<<<<<<< HEAD
 df_fun_3 = pd.read_parquet('Data/Procesada/df_fun_3.parquet')
+=======
+>>>>>>> cf53756bde7222988e451b5a0891bcf5570352b8
 df_fun_4_5 = pd.read_parquet('Data/Procesada/df_fun_4_5.parquet')
 
 #-------------------------------------------------------------------------------------------------------------------
