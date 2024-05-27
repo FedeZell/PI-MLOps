@@ -1,23 +1,57 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 import pandas as pd
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 
-# -------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------
 
 app = FastAPI()
 
-# -------------------------------------------------------------------------------------------------------------------
+
+df_fun_2 = pd.read_parquet('Data\Procesada\df_fun_2.parquet')
+df_fun_4_5 = pd.read_parquet('Data\\Procesada\\df_fun_4_5.parquet')
+
+#-------------------------------------------------------------------------------------------------------------------
+
+# Endpoint 2
+
+@app.get('/userdata')
+async def userdata(user_id):
+    # Si el valor no es una cadena de texto se devuelve un mensaje de error.
+    if type(user_id) != str:
+        return 'Error: El valor ingresado debe ser una palabra'
+    # Se normaliza el valor convirtiéndolo a minúscula.
+    usuario = user_id.lower()
+
+    resenias_usuario = df_fun_2[(df_fun_2['user_id'] == user_id) & (df_fun_2['item_id'].isin(df_fun_2['item_id']))]
+
+    gasto = resenias_usuario['price'].sum()
+
+    if resenias_usuario['recommend'].sum() == 0:
+        porcentaje_recomendacion = 0
+    else:
+        porcentaje_recomendacion = (resenias_usuario['recommend'].sum() / len(resenias_usuario)) * 100
+
+    conteo = df_fun_2[df_fun_2['user_id'] == usuario]
+    conteo_items = conteo.shape[0]
+
+    datos_usuario = {
+        "User X": user_id,
+        "Dinero gastado": f"{gasto:.2f} USD",
+        "Porcentaje de recomendación": f'{porcentaje_recomendacion}%',
+        "Cantidad de items": conteo_items
+        }
+    
+    return datos_usuario
+
+#-------------------------------------------------------------------------------------------------------------------
 
 # Endpoint 4
+
 @app.get('/best_developer_year')
 async def best_developer_year(anio:int):
 
-    df_fun_4 = pd.read_parquet('C:\Users\fedez\OneDrive\Escritorio\PI-MLOps\Data\Procesada\df_fun_4_5.parquet')
-
-    if anio not in df_fun_4['release_year'].unique():
+    if anio not in df_fun_4_5['release_year'].unique():
         return f"El año {anio} no existe en los registros."
-    juegos_del_año = df_fun_4[df_fun_4['release_year'] == anio]
+    juegos_del_año = df_fun_4_5[df_fun_4_5['release_year'] == anio]
     
     resenias = juegos_del_año.groupby('developer')['recommend'].sum().reset_index()
 
@@ -35,23 +69,23 @@ async def best_developer_year(anio:int):
 
     return top3
 
+
 # -------------------------------------------------------------------------------------------------------------------
 
 # Endpoint 5
-
 @app.get('/developer_reviews_analysis')
-async def developer_reviews_analysis(desarrolladora):
-
-    df_fun_5 = pd.read_parquet('C:\Users\fedez\OneDrive\Escritorio\PI-MLOps\Data\Procesada\df_fun_4_5.parquet')
+async def developer_reviews_analysis(desarrolladora:str):
 
     if type(desarrolladora) != str:
         return 'Error: El valor ingresado debe ser una palabra'
     
     desarrollador = desarrolladora.lower()
 
-    desarrollador = df_fun_5[df_fun_5['developer'] == desarrollador]
+    desarrollador = df_fun_4_5[df_fun_4_5['developer'] == desarrollador]
     
     analisis = desarrollador['analisis_sentimiento']
     opinion = analisis.value_counts()
 
-    return {desarrolladora : list([f'Negative: {(opinion.get(0, 0))}', f'Positive: {(opinion.get(2, 0))}'])}
+    return {desarrolladora: list([f'Negative: {(opinion.get(0, 0))}', f'Positive: {(opinion.get(2, 0))}'])}
+
+
