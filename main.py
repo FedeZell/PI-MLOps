@@ -6,8 +6,8 @@ import pandas as pd
 app = FastAPI()
 
 
-df_fun_2 = pd.read_parquet('Data\Procesada\df_fun_2.parquet')
-df_fun_4_5 = pd.read_parquet('Data\\Procesada\\df_fun_4_5.parquet')
+df_fun_2 = pd.read_parquet('Data/Procesada/df_fun_2.parquet')
+df_fun_4_5 = pd.read_parquet('Data/Procesada/df_fun_4_5.parquet')
 
 #-------------------------------------------------------------------------------------------------------------------
 
