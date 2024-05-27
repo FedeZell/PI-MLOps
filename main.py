@@ -20,16 +20,12 @@ df_fun_4_5 = pd.read_parquet('Datasets/Procesado/df_fun_4_5.parquet')
 @app.get('/userdata')
 async def userdata(user_id:str):
 
-    ''' Por cuestion de uso de memoria en Render se procede a tomar una muestra del dataframe para
-    evitar complicaciones a la hora de hacer el deploy ya que el archivo original es muy pesado.'''
-    df_sample_fun_2 = df_fun_2.sample(frac=0.1, random_state=50)
-
     if type(user_id) != str:
         return 'Error: El valor ingresado debe ser una palabra'
 
     usuario = user_id.lower()
 
-    resenias_usuario = df_sample_fun_2[(df_sample_fun_2['user_id'] == user_id) & (df_sample_fun_2['item_id'].isin(df_sample_fun_2['item_id']))]
+    resenias_usuario = df_fun_2[(df_fun_2['user_id'] == user_id) & (df_fun_2['item_id'].isin(df_fun_2['item_id']))]
 
     gasto = resenias_usuario['price'].sum()
 
@@ -38,7 +34,7 @@ async def userdata(user_id:str):
     else:
         porcentaje_recomendacion = (resenias_usuario['recommend'].sum() / len(resenias_usuario)) * 100
 
-    conteo = df_sample_fun_2[df_sample_fun_2['user_id'] == usuario]
+    conteo = df_fun_2[df_fun_2['user_id'] == usuario]
     conteo_items = conteo.shape[0]
 
     datos_usuario = {
@@ -57,14 +53,9 @@ async def userdata(user_id:str):
 @app.get('/user_for_genre')
 async def User_For_Genre(genero:str):
 
-    ''' Por cuestion de uso de memoria en Render se procede a tomar una muestra del dataframe para
-    evitar complicaciones a la hora de hacer el deploy ya que el archivo original es muy pesado.'''
-    df_sample_fun_3 = df_fun_3.sample(frac=0.1, random_state=50)
-
     genero_m = genero.lower()
     
-
-    df_genero = df_sample_fun_3[df_sample_fun_3["genres"] == genero_m]
+    df_genero = df_fun_3[df_fun_3["genres"] == genero_m]
 
     df_horas_anuales = df_genero.groupby(["release_year"])["playtime_forever"].sum()
     df_horas_anuales = df_horas_anuales.reset_index()
