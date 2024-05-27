@@ -6,19 +6,20 @@ import pandas as pd
 app = FastAPI()
 
 
-df_fun_2 = pd.read_parquet('Data\Procesada\df_fun_2.parquet')
-df_fun_4_5 = pd.read_parquet('Data\\Procesada\\df_fun_4_5.parquet')
+df_fun_2 = pd.read_parquet('Data/Procesada/df_fun_2.parquet')
+df_fun_3 = pd.read_parquet('Data/Procesada/df_fun_3.parquet')
+df_fun_4_5 = pd.read_parquet('Data/Procesada/df_fun_4_5.parquet')
 
 #-------------------------------------------------------------------------------------------------------------------
 
 # Endpoint 2
 
 @app.get('/userdata')
-async def userdata(user_id):
-    # Si el valor no es una cadena de texto se devuelve un mensaje de error.
+async def userdata(user_id:str):
+
     if type(user_id) != str:
         return 'Error: El valor ingresado debe ser una palabra'
-    # Se normaliza el valor convirtiéndolo a minúscula.
+
     usuario = user_id.lower()
 
     resenias_usuario = df_fun_2[(df_fun_2['user_id'] == user_id) & (df_fun_2['item_id'].isin(df_fun_2['item_id']))]
@@ -41,6 +42,33 @@ async def userdata(user_id):
         }
     
     return datos_usuario
+
+#-------------------------------------------------------------------------------------------------------------------
+
+# Endpoint 3
+
+@app.get('/user_for_genre')
+async def User_For_Genre(genero:str):
+
+    genero_m = genero.lower()
+    
+
+    df_genero = df_fun_3[df_fun_3["genres"] == genero_m]
+
+    df_horas_anuales = df_genero.groupby(["release_year"])["playtime_forever"].sum()
+    df_horas_anuales = df_horas_anuales.reset_index()
+
+    df_horas = df_genero.groupby("user_id")["playtime_forever"].sum()
+    
+    top_horas = df_horas.idxmax()
+
+    df_horas_anuales = df_horas_anuales.rename(columns={"release_year": "Año", "playtime_forever": "Horas"})
+    horas_anuales = df_horas_anuales.to_dict(orient="records")
+
+    return {
+            f"Usuario con más horas jugadas para género {genero}": top_horas,
+            "Horas jugadas": horas_anuales
+            }
 
 #-------------------------------------------------------------------------------------------------------------------
 
