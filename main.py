@@ -8,7 +8,7 @@ app = FastAPI()
 
 df_fun_2 = pd.read_parquet('Datasets/Procesado/df_fun_2.parquet')
 
-df_fun_3 = pd.read_parquet('Data/Procesada/df_fun_3.parquet')
+df_fun_3 = pd.read_parquet('Datasets/Procesado/df_fun_3.parquet')
 
 df_fun_4_5 = pd.read_parquet('Datasets/Procesado/df_fun_4_5.parquet')
 
@@ -126,5 +126,3 @@ async def developer_reviews_analysis(desarrolladora:str):
     opinion = analisis.value_counts()
 
     return {desarrolladora: list([f'Negative: {(opinion.get(0, 0))}', f'Positive: {(opinion.get(2, 0))}'])}
-
-
