@@ -8,7 +8,7 @@ app = FastAPI()
 
 df_fun_2 = pd.read_parquet('Data/Procesada/df_fun_2.parquet')
 
-df_fun_3 = pd.read_parquet('Data/Procesada/df_fun_3.parquet')
+#df_fun_3 = pd.read_parquet('Data/Procesada/df_fun_3.parquet')
 
 df_fun_4_5 = pd.read_parquet('Data/Procesada/df_fun_4_5.parquet')
 
@@ -50,7 +50,7 @@ async def userdata(user_id:str):
 
 # Endpoint 3
 
-@app.get('/user_for_genre')
+"""@app.get('/user_for_genre')
 async def User_For_Genre(genero:str):
 
     genero_m = genero.lower()
@@ -71,7 +71,7 @@ async def User_For_Genre(genero:str):
     return {
             f"Usuario con más horas jugadas para género {genero}": top_horas,
             "Horas jugadas": horas_anuales
-            }
+            }"""
 
 #-------------------------------------------------------------------------------------------------------------------
 
