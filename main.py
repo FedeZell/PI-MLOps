@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 import pandas as pd
 
-#-------------------------------------------------------------------------------------------------------------------
-
 app = FastAPI()
 
+#-------------------------------------------------------------------------------------------------------------------
+
+df_fun_1 = pd.read_parquet('Datasets/Procesado/df_fun_1.parquet')
 
 df_fun_2 = pd.read_parquet('Datasets/Procesado/df_fun_2.parquet')
 
@@ -12,30 +13,61 @@ df_fun_3 = pd.read_parquet('Datasets/Procesado/df_fun_3.parquet')
 
 df_fun_4_5 = pd.read_parquet('Datasets/Procesado/df_fun_4_5.parquet')
 
-
 #-------------------------------------------------------------------------------------------------------------------
 
+# Endpoint 1
+
+@app.get('/developer')
+async def developer(desarrollador):
+
+    if type(desarrollador) != str:
+        return 'Error: El valor ingresado debe ser una palabra'
+    
+    desarrollador_m = desarrollador.lower()
+
+    desarrolladora = df_fun_1[df_fun_1['developer'] == desarrollador_m]
+    
+    result = {}
+
+    for year in desarrolladora['release_year'].unique():
+
+        items_year = desarrolladora[desarrolladora['release_year'] == year]
+
+        total_items = items_year.shape[0]
+
+        free_items = items_year[items_year['price'] == 0.00].shape[0]
+
+        percentage_free_items = (free_items / total_items) * 100
+        
+        result[year] = {
+            "Año": year,
+            "Cantidad de Items": total_items,
+            "Contenido Free": f"{percentage_free_items:.2f}%"
+        }
+
+    return result
+
+#-------------------------------------------------------------------------------------------------------------------
 # Endpoint 2
 
 @app.get('/userdata')
-async def userdata(user_id:str):
+async def userdata(user_id: str):
 
     if type(user_id) != str:
         return 'Error: El valor ingresado debe ser una palabra'
 
-    usuario = user_id.lower()
+    usuario_m = user_id.lower()
 
-    resenias_usuario = df_fun_2[(df_fun_2['user_id'] == user_id) & (df_fun_2['item_id'].isin(df_fun_2['item_id']))]
+    usuario = df_fun_2[df_fun_2['user_id'] == usuario_m]
 
-    gasto = resenias_usuario['price'].sum()
+    gasto = usuario['price'].sum()
 
-    if resenias_usuario['recommend'].sum() == 0:
+    if usuario['recommend'].sum() == 0:
         porcentaje_recomendacion = 0
     else:
-        porcentaje_recomendacion = (resenias_usuario['recommend'].sum() / len(resenias_usuario)) * 100
+        porcentaje_recomendacion =  (usuario['recommend'].sum() / len(usuario)) * 100
 
-    conteo = df_fun_2[df_fun_2['user_id'] == usuario]
-    conteo_items = conteo.shape[0]
+    conteo_items = usuario.shape[0]
 
     datos_usuario = {
         "User X": user_id,
