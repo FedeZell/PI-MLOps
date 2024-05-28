@@ -5,7 +5,7 @@ app = FastAPI()
 
 #-------------------------------------------------------------------------------------------------------------------
 
-
+df_fun_1 = pd.read_parquet('Datasets/Procesado/df_fun_1.parquet')
 
 df_fun_2 = pd.read_parquet('Datasets/Procesado/df_fun_2.parquet')
 
@@ -15,6 +15,37 @@ df_fun_4_5 = pd.read_parquet('Datasets/Procesado/df_fun_4_5.parquet')
 
 #-------------------------------------------------------------------------------------------------------------------
 
+# Endpoint 1
+
+@app.get('/developer')
+async def developer(desarrollador: str):
+
+    if type(desarrollador) != str:
+        return 'Error: El valor ingresado debe ser una palabra'
+    
+    desarrollador_m = desarrollador.lower()
+
+    desarrolladora = df_fun_1[df_fun_1['developer'] == desarrollador_m]
+    
+    resultado = {}
+
+    for anio in desarrolladora['release_year'].unique():
+
+        items_anio = desarrolladora[desarrolladora['release_year'] == anio]
+
+        total_items = items_anio.shape[0]
+
+        free_items = items_anio[items_anio['price'] == 0.00].shape[0]
+
+        porcentaje_gratis = (free_items / total_items) * 100
+
+        resultado[anio] = {
+                        "Año": anio,
+                        "Cantidad de Items": total_items,
+                        "Contenido Free": f"{porcentaje_gratis:.2f}%"
+                        }
+
+    return resultado
 
 #-------------------------------------------------------------------------------------------------------------------
 
