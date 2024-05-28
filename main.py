@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import pandas as pd
 
 app = FastAPI()
@@ -17,8 +17,8 @@ df_fun_4_5 = pd.read_parquet('Datasets/Procesado/df_fun_4_5.parquet')
 
 # Endpoint 1
 
-@app.get('/developer')
-async def developer(desarrollador):
+'''@app.get('/developer')
+async def developer(desarrollador:str):
 
     if type(desarrollador) != str:
         return 'Error: El valor ingresado debe ser una palabra'
@@ -45,7 +45,59 @@ async def developer(desarrollador):
             "Contenido Free": f"{percentage_free_items:.2f}%"
         }
 
-    return result
+    return result'''
+
+'''@app.get('/developer')
+async def developer(desarrollador: str):
+    if type(desarrollador) != str:
+        raise HTTPException(status_code=400, detail="El valor ingresado debe ser una palabra")
+
+    desarrollador_m = desarrollador.lower()
+
+    desarrolladora = df_fun_1[df_fun_1['developer'] == desarrollador_m]
+
+    if desarrolladora.empty:
+        raise HTTPException(status_code=404, detail="Desarrolladora no encontrada")
+
+    result = []
+    
+    for year in desarrolladora['release_year'].unique():
+        items_year = desarrolladora[desarrolladora['release_year'] == year]
+        total_items = items_year.shape[0]
+        free_items = items_year[items_year['price'] == 0.00].shape[0]
+        percentage_free_items = (free_items / total_items) * 100
+
+        result.append({
+            "Año": year,
+            "Cantidad de Items": total_items,
+            "Contenido Free": f"{percentage_free_items:.2f}%"
+        })
+
+    return result'''
+
+@app.get('/developer')
+async def developer(desarrollador):
+    # Filtrar el DataFrame por el desarrollador proporcionado
+    df_desarrollador = df_fun_1[df_fun_1['developer'] == desarrollador]
+
+    # Agrupar por año y calcular la cantidad de items y el porcentaje de contenido gratuito
+    stats_por_anio = df_desarrollador.groupby('release_anio').agg({
+        'items_free': 'sum',
+        'items_total': 'sum',
+        'percentage_free': lambda x: (pd.to_numeric(x.str.rstrip('%'), errors='coerce') / 100).mean() * 100
+    }).reset_index()
+
+    # Redondear a dos decimales
+    stats_por_anio['percentage_free'] = stats_por_anio['percentage_free'].round(2)
+
+    # Cambiar el nombre de la columna
+    stats_por_anio = stats_por_anio.rename(columns={'release_anio': 'Año'})
+    stats_por_anio = stats_por_anio.rename(columns={'items_total': 'Items'})
+    stats_por_anio = stats_por_anio.rename(columns={'percentage_free': '% Free'})
+
+    # Mostrar los resultados
+    return stats_por_anio[['Año', 'Items', '% Free']]
+
 
 #-------------------------------------------------------------------------------------------------------------------
 # Endpoint 2
