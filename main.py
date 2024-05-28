@@ -19,28 +19,37 @@ df_fun_3 = pd.read_parquet('Datasets/Procesado/df_fun_3.parquet')
 @app.get('/developer')
 async def developer(desarrollador: str):
 
-    if type(desarrollador) != str:
-        return 'Error: El valor ingresado debe ser una palabra'
-
+    # Se normaliza el valor convirtiéndolo a minúscula.
     desarrollador_m = desarrollador.lower()
 
+    # Se fijan las filas en las que coincidan el desarrollador correspondiente.
     desarrolladora = df_fun_1_4_5[df_fun_1_4_5['developer'] == desarrollador_m]
 
-    result = []
+    # Se genera una lista para guardar los resultados de las iteraciones.
+    resultado = []
 
-    for year in desarrolladora['release_year'].unique():
-        items_year = desarrolladora[desarrolladora['release_year'] == year]
-        total_items = items_year.shape[0]
-        free_items = items_year[items_year['price'] == 0.00].shape[0]
-        percentage_free_items = (free_items / total_items) * 100
-        
-        result.append({
-            "Año": int(year),
+    # Se itera sobre los años únicos en los que hay lanzamientos para la desarrolladora.
+    for anio in desarrolladora['release_year'].unique():
+        # Se filtran los ítems por año de lanzamiento.
+        items_anio = desarrolladora[desarrolladora['release_year'] == anio]
+
+        # Se filtran los ítems por año de lanzamiento.
+        total_items = items_anio.shape[0]
+
+        # Se cuentan el número de ítems con precio igual a 0.00 en ese año.
+        items_gratis = items_anio[items_anio['price'] == 0.00].shape[0]
+
+        # Se calcula el porcentaje de ítems gratuitos
+        porcentaje_gratis = (items_gratis / total_items) * 100
+    
+        # Se agregan los resultados de las iteraciones a la lista
+        resultado.append({
+            "Año": int(anio),
             "Cantidad de Items": int(total_items),
-            "Contenido Free": f"{percentage_free_items:.2f}%"
+            "Contenido Free": f"{porcentaje_gratis:.2f}%"
         })
 
-    return result
+    return resultado
 
 # -----------------------------------------------------------------------------
 
