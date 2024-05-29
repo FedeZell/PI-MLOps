@@ -11,7 +11,8 @@
 ## **Endpoints propuestos**
 
 + def **developer( *desarrollador : str* )**:
-    Cantidad de items y porcentaje de contenido Free por año según empresa desarrolladora. 
+    Cantidad de items y porcentaje de contenido Free por año según empresa desarrolladora.
+  
 Ejemplo de retorno:
 | Año  | Cantidad de Items | Contenido Free  |
 |------|-------------------|------------------|
