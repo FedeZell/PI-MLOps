@@ -191,6 +191,8 @@ async def developer_reviews_analysis(desarrolladora: str):
 @app.get('/recomendacion_juego')
 async def recomendacion_juego(item_id: int):
 
+    """Devuelve los 5 juegos más similares al del id ingresado"""
+
     vectorizador = TfidfVectorizer()
     matriz = vectorizador.fit_transform(df_ml['combined'])
 
