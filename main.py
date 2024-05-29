@@ -23,40 +23,35 @@ df_ml = pd.read_parquet('Datasets/Procesado/df_ml.parquet')
 @app.get('/developer')
 async def developer(desarrollador: str):
 
-    """Devuelve una lista de la cantidad de ítems y porcentaje de contenido gratuito
-        lanzado por año de la desarrolladora ingresada."""
+    """Devuelve una lista de la cantidad de ítems y porcentaje de
+    contenido gratuito lanzado por año de la desarrolladora ingresada.
+    Muestras: Valve, Ubisoft, Square Enix."""
 
-    # Se normaliza el valor convirtiéndolo a minúscula.
     desarrollador_m = desarrollador.lower()
 
-    # Se fijan las filas en las que coincidan el desarrollador correspondiente.
     desarrolladora = df_fun_1_4_5[df_fun_1_4_5['developer'] == desarrollador_m]
 
-    # Se genera una lista para guardar los resultados de las iteraciones.
-    resultado = []
+    lista = []
 
-    # Se itera sobre los años únicos en los que hay lanzamientos para la desarrolladora.
     for anio in desarrolladora['release_year'].unique():
-        # Se filtran los ítems por año de lanzamiento.
+
         items_anio = desarrolladora[desarrolladora['release_year'] == anio]
 
-        # Se filtran los ítems por año de lanzamiento.
         total_items = items_anio.shape[0]
 
-        # Se cuentan el número de ítems con precio igual a 0.00 en ese año.
         items_gratis = items_anio[items_anio['price'] == 0.00].shape[0]
 
-        # Se calcula el porcentaje de ítems gratuitos
         porcentaje_gratis = (items_gratis / total_items) * 100
-    
-        # Se agregan los resultados de las iteraciones a la lista
-        resultado.append({
+
+        lista.append({
             "Año": int(anio),
             "Cantidad de Items": int(total_items),
             "Contenido Free": f"{porcentaje_gratis:.2f}%"
         })
 
-    return resultado
+    lista_ordenada = sorted(lista, key=lambda x: x["Año"], reverse=True)
+
+    return lista_ordenada
 
 # -----------------------------------------------------------------------------
 
@@ -67,7 +62,8 @@ async def developer(desarrollador: str):
 async def userdata(user_id: str):
 
     """Devuelve la cantidad de dinero gastado, el porcentaje de recomendaciones dadas
-        en base al total de juegos que posee y la cantidad total de ítems que posee el usuario ingresado."""
+        en base al total de juegos que posee y la cantidad total de ítems que posee
+        el usuario ingresado. Muestras: doctr, tandoru."""
 
     if type(user_id) != str:
         return 'Error: El valor ingresado debe ser una palabra'
@@ -104,7 +100,8 @@ async def userdata(user_id: str):
 async def User_For_Genre(genero: str):
 
     """Devuelve el usuario que mas horas jugó del género ingresado
-        y la cantidad de horas acumuladas por año que dicho usuario jugó."""
+        y la cantidad de horas acumuladas por año que dicho usuario jugó.
+        Muestras: action."""
 
     genero_m = genero.lower()
 
@@ -135,7 +132,8 @@ async def User_For_Genre(genero: str):
 async def best_developer_year(anio: int):
 
     """Devuelve los 3 mejores desarrolladores del año ingresado
-        en base a las recomendaciones de los usuarios."""
+        en base a las recomendaciones de los usuarios.
+        Muestras: 2002, 2015."""
 
     if anio not in df_fun_1_4_5['release_year'].unique():
         return f"El año {anio} no existe en los registros."
@@ -165,7 +163,8 @@ async def best_developer_year(anio: int):
 @app.get('/developer_reviews_analysis')
 async def developer_reviews_analysis(desarrolladora: str):
 
-    """Devuelve el numero de reseñas negativas y positivas de la desarrolladora ingresada."""
+    """Devuelve el numero de reseñas negativas y positivas de
+    la desarrolladora ingresada. Muestras: Ubisoft, Rockstar Games."""
 
 
     if type(desarrolladora) != str:
@@ -191,7 +190,8 @@ async def developer_reviews_analysis(desarrolladora: str):
 @app.get('/recomendacion_juego')
 async def recomendacion_juego(item_id: int):
 
-    """Devuelve los 5 juegos más similares al del id ingresado"""
+    """Devuelve los 5 juegos más similares al del id ingresado.
+    Muestras: 380360, 9350, 319080."""
 
     vectorizador = TfidfVectorizer()
     matriz = vectorizador.fit_transform(df_ml['combined'])
@@ -199,7 +199,7 @@ async def recomendacion_juego(item_id: int):
     coseno = cosine_similarity(matriz, matriz)
 
     if item_id not in df_ml['item_id'].values:
-        return "Error: item_id no encontrado."
+        return "Error: item no encontrado."
 
     item_index = df_ml[df_ml['item_id'] == item_id].index[0]
 
