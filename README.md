@@ -42,6 +42,11 @@ Ejemplo de retorno: {'Valve' : [Negative = 182, Positive = 278]}
 
 ## **Modelo de aprendizaje automático**
 
+Para este proyecto se optó por desarrollar el sistema de recomendación ítem-ítem.
+
++ def **recomendacion_juego( *id de producto* )**:
+    Ingresando el id de producto, deberíamos recibir una lista con 5 juegos recomendados similares al ingresado.
+  
 ## **Recursos**
 Link a la [API](https://pi-mlops-djwn.onrender.com/docs)
 Link a los [Datasets](https://github.com/FedeZell/PI-MLOps/tree/main/Datasets/Procesado)
