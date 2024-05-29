@@ -42,7 +42,8 @@ Ejemplo de retorno: {'Valve' : [Negative = 182, Positive = 278]}
 
 ## **Modelo de aprendizaje automático**
 
-[API](https://pi-mlops-djwn.onrender.com/docs)
+## **Recursos**
+Link a la [API](https://pi-mlops-djwn.onrender.com/docs)
 
 # _Autor_
 - Federico Germán Zellweger Semino
