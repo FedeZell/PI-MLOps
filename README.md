@@ -5,7 +5,8 @@
 
 
 
-
+## **Descripción del proyecto**
+El proyecto consiste en la implementación de un framework FastAPI para el desarrollo de 5 endpoints y un modelo de aprendizaje automático.
 
 
 ## **Endpoints propuestos**
@@ -40,6 +41,8 @@ Ejemplo de retorno: [{"Puesto 1" : X}, {"Puesto 2" : Y},{"Puesto 3" : Z}]
 Ejemplo de retorno: {'Valve' : [Negative = 182, Positive = 278]}
 
 ## **Modelo de aprendizaje automático**
+
+[API](https://pi-mlops-djwn.onrender.com/docs)
 
 # _Autor_
 - Federico Germán Zellweger Semino
