@@ -3,11 +3,11 @@
 <img src="https://user-images.githubusercontent.com/67664604/217914153-1eb00e25-ac08-4dfa-aaf8-53c09038f082.png"  height=300>
 </p>
 
-
-
 ## **Descripción del proyecto**
-El proyecto consiste en la implementación de un framework FastAPI para el desarrollo de 5 endpoints y un modelo de aprendizaje automático.
+El proyecto consiste en la implementación de un MVP (o producto mínimo viable) a través de un framework FastAPI para el desarrollo de 5 endpoints y un modelo de aprendizaje automático creados con el objetivo de aplicarse a datasets de la plataforma Steam.
 
+## **ETL**
+Para más información del proceso de ETL haga click en el siguiente [link](https://github.com/FedeZell/PI-MLOps/tree/main/ETL-EDA).
 
 ## **Endpoints propuestos**
 
