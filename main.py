@@ -1,5 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 app = FastAPI()
 
@@ -11,6 +13,8 @@ df_fun_2 = pd.read_parquet('Datasets/Procesado/df_fun_2.parquet')
 
 df_fun_3 = pd.read_parquet('Datasets/Procesado/df_fun_3.parquet')
 
+df_ml = pd.read_parquet('Datasets/Procesado/df_ml.parquet')
+
 # -----------------------------------------------------------------------------
 
 # Endpoint 1
@@ -18,6 +22,9 @@ df_fun_3 = pd.read_parquet('Datasets/Procesado/df_fun_3.parquet')
 
 @app.get('/developer')
 async def developer(desarrollador: str):
+
+    """Devuelve una lista de la cantidad de ítems y porcentaje de contenido gratuito
+        lanzado por año de la desarrolladora ingresada."""
 
     # Se normaliza el valor convirtiéndolo a minúscula.
     desarrollador_m = desarrollador.lower()
@@ -59,6 +66,9 @@ async def developer(desarrollador: str):
 @app.get('/userdata')
 async def userdata(user_id: str):
 
+    """Devuelve la cantidad de dinero gastado, el porcentaje de recomendaciones dadas
+        en base al total de juegos que posee y la cantidad total de ítems que posee el usuario ingresado."""
+
     if type(user_id) != str:
         return 'Error: El valor ingresado debe ser una palabra'
 
@@ -93,6 +103,9 @@ async def userdata(user_id: str):
 @app.get('/user_for_genre')
 async def User_For_Genre(genero: str):
 
+    """Devuelve el usuario que mas horas jugó del género ingresado
+        y la cantidad de horas acumuladas por año que dicho usuario jugó."""
+
     genero_m = genero.lower()
 
     df_genero = df_fun_3[df_fun_3["genres"] == genero_m]
@@ -120,6 +133,9 @@ async def User_For_Genre(genero: str):
 
 @app.get('/best_developer_year')
 async def best_developer_year(anio: int):
+
+    """Devuelve los 3 mejores desarrolladores del año ingresado
+        en base a las recomendaciones de los usuarios."""
 
     if anio not in df_fun_1_4_5['release_year'].unique():
         return f"El año {anio} no existe en los registros."
@@ -149,6 +165,9 @@ async def best_developer_year(anio: int):
 @app.get('/developer_reviews_analysis')
 async def developer_reviews_analysis(desarrolladora: str):
 
+    """Devuelve el numero de reseñas negativas y positivas de la desarrolladora ingresada."""
+
+
     if type(desarrolladora) != str:
         return 'Error: El valor ingresado debe ser una palabra'
 
@@ -163,3 +182,35 @@ async def developer_reviews_analysis(desarrolladora: str):
             f'Positive: {(opinion.get(2, 0))}'])}
 
 
+# -----------------------------------------------------------------------------
+
+
+# Sistema de recomendación (Item-Item)
+
+
+@app.get('/recomendacion_juego')
+async def recomendacion_juego(item_id: int):
+
+    vectorizador = TfidfVectorizer()
+    matriz = vectorizador.fit_transform(df_ml['combined'])
+
+    coseno = cosine_similarity(matriz, matriz)
+
+    if item_id not in df_ml['item_id'].values:
+        return "Error: item_id no encontrado."
+
+    item_index = df_ml[df_ml['item_id'] == item_id].index[0]
+
+    puntuacion_similar = list(enumerate(coseno[item_index]))
+
+    puntuacion_similar = sorted(puntuacion_similar, key=lambda x: x[1], reverse=True)
+
+    puntuacion_similar = puntuacion_similar[1:6]
+
+    item_indices = [i[0] for i in puntuacion_similar]
+
+    item_title = df_ml.loc[df_ml['item_id'] == item_id, 'title'].values[0]
+
+    titulos = [titulo.title() for titulo in df_ml.iloc[item_indices]['title'].tolist()]
+
+    return f"Los títulos similares a '{item_title.title()}' son: {titulos}"
