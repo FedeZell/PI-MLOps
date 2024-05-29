@@ -44,6 +44,7 @@ Ejemplo de retorno: {'Valve' : [Negative = 182, Positive = 278]}
 
 ## **Recursos**
 Link a la [API](https://pi-mlops-djwn.onrender.com/docs)
+Link a los [Datasets](https://github.com/FedeZell/PI-MLOps/tree/main/Datasets/Procesado)
 
 # _Autor_
 - Federico Germán Zellweger Semino
