@@ -39,6 +39,8 @@ Ejemplo de retorno: [{"Puesto 1" : X}, {"Puesto 2" : Y},{"Puesto 3" : Z}]
     de registros de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento como valor positivo o negativo. 
 Ejemplo de retorno: {'Valve' : [Negative = 182, Positive = 278]}
 
+## **Modelo de aprendizaje automático**
+
 # _Autor_
 - Federico Germán Zellweger Semino
 - E-mail: fedezell97@gmail.com
