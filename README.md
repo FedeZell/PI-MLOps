@@ -48,7 +48,7 @@ Para este proyecto se optó por desarrollar el sistema de recomendación ítem-�
     Ingresando el id de producto, deberíamos recibir una lista con 5 juegos recomendados similares al ingresado.
   
 ## **Recursos**
-Link a la [API](https://pi-mlops-djwn.onrender.com/docs)
+Link a la [API](https://pi-mlops-djwn.onrender.com/docs)  
 Link a los [Datasets](https://github.com/FedeZell/PI-MLOps/tree/main/Datasets/Procesado)
 
 # _Autor_
